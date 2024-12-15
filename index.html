@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        #barcode-container {
+            margin-top: 20px;
+        }
+
+        .barcode {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button.print {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button.print:hover {
+            background-color: #45a049;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+            }
+            .form-container, button.print {
+                display: none;
+            }
+            .barcode {
+                width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Barcode Generator</h1>
+
+        <label for="guestName">Guest Name</label>
+        <input type="text" id="guestName" placeholder="Enter guest name" required>
+
+        <label for="guestNumber">Number of Guests</label>
+        <input type="number" id="guestNumber" placeholder="Enter number of guests" required>
+
+        <label for="barcodeText">Barcode Text</label>
+        <input type="text" id="barcodeText" placeholder="Enter text for the barcode" required>
+
+        <button onclick="generateBarcode()">Generate Barcode</button>
+    </div>
+
+    <div id="barcode-container"></div>
+
+    <button class="print" onclick="printBarcode()">Print Barcode</button>
+
+    <script>
+        function generateBarcode() {
+            const guestName = document.getElementById('guestName').value;
+            const guestNumber = parseInt(document.getElementById('guestNumber').value);
+            const barcodeText = document.getElementById('barcodeText').value;
+
+            if (!guestName || !guestNumber || !barcodeText || guestNumber <= 0) {
+                alert('Please fill in all fields with valid values.');
+                return;
+            }
+
+            const barcodeContainer = document.getElementById('barcode-container');
+            barcodeContainer.innerHTML = ""; // Clear previous barcodes
+
+            for (let i = 0; i < guestNumber; i++) {
+                // Create a new barcode element
+                const barcodeDiv = document.createElement('div');
+                barcodeDiv.classList.add('barcode');
+                const barcodeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+                barcodeDiv.appendChild(barcodeSvg);
+                barcodeContainer.appendChild(barcodeDiv);
+
+                // Generate the barcode
+                JsBarcode(barcodeSvg, `${barcodeText}-${i + 1}`, {
+                    format: "CODE128",
+                    lineColor: "#000",
+                    width: 2,
+                    height: 50,
+                    displayValue: true
+                });
+            }
+        }
+
+        function printBarcode() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
